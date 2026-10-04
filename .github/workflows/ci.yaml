@@ -20,3 +20,10 @@ jobs:
           sleep 2
 
       - run: curl -sf http://localhost:8000/health
+
+  kind-cluster:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: helm/kind-action@v1
+
+      - run: kubectl cluster-info
