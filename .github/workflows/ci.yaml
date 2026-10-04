@@ -16,6 +16,7 @@ jobs:
       - run: uv sync
 
       - run: |
-          uv run uvicorn kubeshield.server:app
+          uv run uvicorn kubeshield.server:app &
+          sleep 2
 
       - run: curl -sf http://localhost:8000/health
