@@ -4,7 +4,12 @@
 
 set -euo pipefail
 
-curl --silent --fail --max-time 180 http://localhost:8000/scan --output scan.json
+if ! curl --silent --fail-with-body --max-time 180 http://localhost:8000/scan --output scan.json; then
+  echo "/scan failed:"
+  cat scan.json
+  echo
+  exit 1
+fi
 
 python3 -m json.tool scan.json
 

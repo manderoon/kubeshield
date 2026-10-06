@@ -18,9 +18,6 @@ jobs:
       - name: Install dependencies
         run: pip install uv && uv sync
 
-      - name: Start server
-        run: scripts/start-server.sh
-
       - name: Make kind cluster
         uses: helm/kind-action@v1
 
@@ -28,6 +25,11 @@ jobs:
         run: |
           curl -s https://raw.githubusercontent.com/kubescape/kubescape/master/install.sh | /bin/bash
           echo "$HOME/.kubescape/bin" >> "$GITHUB_PATH"
+
+      # Must start after kubescape is installed: the server only sees the
+      # PATH it was started with.
+      - name: Start server
+        run: scripts/start-server.sh
 
       - name: Deploy vulnerable workload
         run: scripts/deploy-vuln-test-workload.sh
