@@ -1,5 +1,21 @@
 # kubeshield
 
+## Research
+
+TODO: Add info about kube + security.
+
+TODO: Add info about types of kube analysers (static/dynamic/etc)
+
+The literature suggests that although `kubescape` has a larger rule set, `trivy` detects more misconfigurations. However, `kubescape` was found to be most stable in terms of similarity to expert ratings (Krieger et al., 2026).
+
+Krieger, M., Gierlinger, M., Shaikh, F., & Kahlhofer, M. (2026).
+[A Comparison of Kubernetes Compliance Standards and Configuration Scanners](https://arxiv.org/abs/2606.24438v1).
+arXiv:2606.24438.
+
+----------------
+
+## Code
+
 Run server
 
 ```bash
