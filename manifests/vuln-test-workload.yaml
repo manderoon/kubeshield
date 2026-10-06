@@ -1,0 +1,69 @@
+# NOTE: Vulnerable workload generated using Claude!!
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: vuln-test-sa
+  namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: vuln-test-admin
+rules:
+  - apiGroups: ["*"]
+    resources: ["*"]
+    verbs: ["*"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: vuln-test-admin-binding
+subjects:
+  - kind: ServiceAccount
+    name: vuln-test-sa
+    namespace: default
+roleRef:
+  kind: ClusterRole
+  name: vuln-test-admin
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vuln-test-workload
+  namespace: default
+  labels:
+    app: vuln-test-workload
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vuln-test-workload
+  template:
+    metadata:
+      labels:
+        app: vuln-test-workload
+    spec:
+      serviceAccountName: vuln-test-sa
+      hostNetwork: true
+      hostPID: true
+      containers:
+        - name: vuln-test-workload
+          image: nginx:1.25
+          securityContext:
+            privileged: true
+            allowPrivilegeEscalation: true
+            runAsUser: 0
+            readOnlyRootFilesystem: false
+          env:
+            - name: API_KEY
+              value: "sk-demo-1234567890abcdef"
+          volumeMounts:
+            - name: host-root
+              mountPath: /host
+      volumes:
+        - name: host-root
+          hostPath:
+            path: /
+            type: Directory
