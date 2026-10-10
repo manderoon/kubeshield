@@ -1,4 +1,4 @@
-name: Scan cluster
+name: CI
 
 on: push
 
@@ -29,7 +29,9 @@ jobs:
 
       - name: Start server
         run: |
-          uv run uvicorn kubeshield.server:app > server.log 2>&1 &
+          # Not `uv run`: it would hold uv's cache lock until the job ends,
+          # and setup-uv's cleanup would time out waiting for it
+          .venv/bin/uvicorn kubeshield.server:app > server.log 2>&1 &
           curl --silent --fail --retry 30 --retry-connrefused --retry-delay 1 http://localhost:8000/health
 
       - name: Deploy vulnerable workload
@@ -46,3 +48,32 @@ jobs:
       - name: Show server log
         if: failure()
         run: cat server.log
+
+  test-model:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      ollama:
+        image: ollama/ollama
+        ports:
+          - 11434:11434
+        options: >-
+          --health-cmd "ollama list"
+          --health-interval 5s
+          --health-retries 10
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Install dependencies
+        run: uv sync
+
+      # Use same OLLAMA_MODEL in src/kubeshield/model.py
+      - name: Download model
+        run: docker exec ${{ job.services.ollama.id }} ollama pull llama3.2:1b
+
+      - name: Ask the model about a scan summary
+        run: uv run scripts/test_model.py
