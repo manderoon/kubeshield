@@ -5,7 +5,7 @@ from kubeshield.scanner import kubescape_scan
 app = FastAPI(title="Kubeshield")
 
 @app.get("/health")
-def health():
+def health() -> dict[str, str]:
     return {"status": "ok"}
 
 @app.get("/scan")

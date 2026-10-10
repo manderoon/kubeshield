@@ -3,7 +3,14 @@ import httpx
 OLLAMA_HOST = "http://localhost:11434"
 OLLAMA_MODEL = "llama3.2:1b"
 
-def llama_chat(prompt: str) -> str:
+def get_prompt(summary):
+    return (
+        "You are a Kubernetes security expert.\n",
+        "Interpret the following kubescape scan results."
+        f"{summary}"
+    )
+
+def llama_chat(prompt):
     response = httpx.post(
         f"{OLLAMA_HOST}/api/chat",
         json={
