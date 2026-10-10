@@ -11,7 +11,7 @@ summary = {
         "medium": 161,
         "low": 9
     },
-    "top_failed_controls": [
+    "failed_controls": [
         "Prevent containers from allowing command execution",
         "Roles with delete capabilities",
         "Applications credentials in configuration files",

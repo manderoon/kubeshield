@@ -46,7 +46,7 @@ jobs:
         run: |
           curl --silent --show-error --max-time 180 http://localhost:8000/scan > scan.json
           jq . scan.json
-          jq -e '.top_failed_controls | length > 0' scan.json
+          jq -e '.failed_controls | length > 0' scan.json
 
       - name: Show server log
         if: failure()

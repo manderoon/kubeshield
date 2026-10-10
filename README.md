@@ -22,23 +22,24 @@ Run server
 uv run uvicorn kubeshield.server:app --reload
 ```
 
-Example output from `/scan`
+Example output from `/scan`, with `failed_controls` sorted by most severe
 
 ```JSON
 {
-    "compliance_score": 63.547916,
+    "compliance_score": 64.52465,
     "failed_resources_by_severity": {
         "critical": 0,
-        "high": 54,
-        "medium": 161,
-        "low": 9
+        "high": 46,
+        "medium": 153,
+        "low": 8
     },
-    "top_failed_controls": [
-        "Prevent containers from allowing command execution",
-        "Roles with delete capabilities",
+    "failed_controls": [
+        "Ensure CPU limits are set",
+        "Ensure memory limits are set",
+        "Writable hostPath mount",
         "Applications credentials in configuration files",
-        "Non-root containers",
-        "List Kubernetes secrets"
+        "Privileged container",
+        ["..."]
     ]
 }
 ```

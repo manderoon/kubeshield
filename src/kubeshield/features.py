@@ -1,34 +1,24 @@
 def kubescape_report_summary(report: dict) -> dict:
     """
-    Extract features we care about from the full
-    kubescape JSON output
+    Extract features we care about from the full kubescape JSON output
     """
-    summary = report.get("summaryDetails", {})
+    summary = report["summaryDetails"]
+    severity_counts = summary["resourcesSeverityCounters"]
 
-    severity_counts = (
-        summary.get("resourcesSeverityCounters")
-        or summary.get("controlsSeverityCounters")
-        or {}
+    failed_controls = [c for c in summary["controls"].values() if c["status"] == "failed"]
+    # Filter data, most severe first, then the ones failing on the most resources
+    failed_controls.sort(
+        key=lambda c: (c["scoreFactor"], c["ResourceCounters"]["failedResources"]),
+        reverse=True,
     )
 
-    compliance_score = summary.get("complianceScore")
-    if compliance_score is None:
-        compliance_score = summary.get("score", 0)
-
-    controls = summary.get("controls", {}) or {}
-    failed_controls = [
-        control.get("name", control.get("controlID", "?"))
-        for control in controls.values()
-        if control.get("status") == "failed"
-    ]
-
     return {
-        "compliance_score": compliance_score,
+        "compliance_score": summary["complianceScore"],
         "failed_resources_by_severity": {
-            "critical": severity_counts.get("criticalSeverity", 0),
-            "high": severity_counts.get("highSeverity", 0),
-            "medium": severity_counts.get("mediumSeverity", 0),
-            "low": severity_counts.get("lowSeverity", 0),
+            "critical": severity_counts["criticalSeverity"],
+            "high": severity_counts["highSeverity"],
+            "medium": severity_counts["mediumSeverity"],
+            "low": severity_counts["lowSeverity"],
         },
-        "top_failed_controls": failed_controls[:5],
+        "failed_controls": [c["name"] for c in failed_controls],
     }
