@@ -2,6 +2,92 @@
 
 Scan a Kubernetes cluster with [kubescape](https://github.com/kubescape/kubescape) and get a local LLM inference server to provide a security assessment with suggested fixes.
 
+## Contents
+
+- [Setting up](#setting-up)
+- [Research](#research)
+
+------------------------------
+
+## Setting up
+
+### Requirements
+
+- `uv`
+- `kubescape`
+- Docker
+- A local kube cluster (`kind`)
+
+### Start a cluster
+
+  ```bash
+  kind create cluster
+  kubectl apply -f tests/ci/vuln-test-workload.yaml
+  ```
+
+### Start Ollama
+
+```bash
+docker run -d --name ollama -p 11434:11434 ollama/ollama
+docker exec ollama ollama pull llama3.2:1b
+```
+
+### Start the server
+
+```bash
+uv run kubeshield
+```
+
+### Server Endpoints
+
+- `GET /health` --> returns status
+- `GET /scan` --> returns `kubescape` summary
+- `GET /assess`  --> returns LLM output
+
+```bash
+curl localhost:8000/assess
+```
+
+Example output from `/scan`, with `failed_controls` sorted by most severe
+
+```JSON
+{
+    "compliance_score": 64.52465,
+    "failed_resources_by_severity": {
+        "critical": 0,
+        "high": 46,
+        "medium": 153,
+        "low": 8
+    },
+    "failed_controls": [
+        "Ensure CPU limits are set",
+        "Ensure memory limits are set",
+        "Writable hostPath mount",
+        "Applications credentials in configuration files",
+        "Privileged container",
+        ["..."]
+    ]
+}
+```
+
+`/assess` returns the same summary with the model's reply:
+
+```JSON
+{
+    "summary": { "compliance_score": 64.52465, ... },
+    "assessment": "<LLM output>"
+}
+```
+
+### Tests
+
+```bash
+uv run pytest
+uv run ruff check
+```
+
+--------------------------------------
+
 ## Research
 
 ### Kubernetes misconfigurations

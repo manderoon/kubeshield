@@ -9,8 +9,12 @@ TIMEOUT = 120
 def get_prompt(summary: dict) -> str:
     return (
         "You are a Kubernetes security expert.\n"
-        "Interpret the following kubescape scan results.\n"
-        f"{summary}"
+        "Below are kubescape scan results for a cluster. "
+        "failed_controls is sorted most severe first.\n"
+        f"{summary}\n\n"
+        "Give a brief assessment of the cluster's security. "
+        "Then suggest concrete fixes for the most severe failed controls, "
+        "such as the Kubernetes settings to change."
     )
 
 def llama_chat(prompt: str) -> str:

@@ -1,7 +1,7 @@
 [project]
 name = "kubeshield"
 version = "0.1.0"
-description = "Add your description here"
+description = "Scan a Kubernetes cluster with kubescape and get LLM suggestions to improve its security"
 readme = "README.md"
 authors = [
     { name = "Mandana Ebrahimian", email = "75654442+manderoon@users.noreply.github.com" }
