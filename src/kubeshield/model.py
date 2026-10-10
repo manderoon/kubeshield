@@ -10,11 +10,10 @@ def get_prompt(summary: dict) -> str:
     return (
         "You are a Kubernetes security expert.\n"
         "Below are kubescape scan results for a cluster. "
-        "failed_controls is sorted most severe first.\n"
+        "Note that failed_controls is sorted by most severe first.\n"
         f"{summary}\n\n"
-        "Give a brief assessment of the cluster's security. "
-        "Then suggest concrete fixes for the most severe failed controls, "
-        "such as the Kubernetes settings to change."
+        "Give a brief assessment of the cluster's security, "
+        "then suggest actionable changes to prevent the failed controls"
     )
 
 def llama_chat(prompt: str) -> str:
@@ -30,10 +29,8 @@ def llama_chat(prompt: str) -> str:
         )
     except httpx.TimeoutException:
         raise UpstreamTimeoutError(f"ollama request timed out after {TIMEOUT} seconds") from None
-    
     except httpx.ConnectError as e:
         raise UnavailableError(f"can't reach ollama at {OLLAMA_HOST}: {e}") from None
-    
     except httpx.HTTPError as e:
         raise UpstreamError(f"ollama request failed: {e}") from None
 
