@@ -7,8 +7,6 @@ Scan a Kubernetes cluster with [kubescape](https://github.com/kubescape/kubescap
 - [Setting up](#setting-up)
 - [Research](#research)
 
-------------------------------
-
 ## Setting up
 
 ### Requirements
@@ -85,8 +83,6 @@ Example output from `/scan`, with `failed_controls` sorted by most severe
 uv run pytest
 uv run ruff check
 ```
-
---------------------------------------
 
 ## Research
 
