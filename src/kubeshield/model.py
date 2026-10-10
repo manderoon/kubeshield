@@ -13,7 +13,8 @@ def get_prompt(summary: dict) -> str:
         "Note that failed_controls is sorted by most severe first.\n"
         f"{summary}\n\n"
         "Give a brief assessment of the cluster's security, "
-        "then suggest actionable changes to prevent the failed controls"
+        "then suggest actionable changes to prevent the failed controls. "
+        "Show each change as a Kubernetes YAML snippet in a ```yaml code block."
     )
 
 def llama_chat(prompt: str) -> str:
