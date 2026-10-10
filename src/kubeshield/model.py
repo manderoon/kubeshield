@@ -5,8 +5,8 @@ OLLAMA_MODEL = "llama3.2:1b"
 
 def get_prompt(summary):
     return (
-        "You are a Kubernetes security expert.\n",
-        "Interpret the following kubescape scan results."
+        "You are a Kubernetes security expert.\n"
+        "Interpret the following kubescape scan results.\n"
         f"{summary}"
     )
 
