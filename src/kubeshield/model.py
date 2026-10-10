@@ -1,3 +1,5 @@
+import json
+
 import httpx
 
 from kubeshield.errors import UnavailableError, UpstreamError, UpstreamTimeoutError
@@ -7,14 +9,11 @@ OLLAMA_MODEL = "llama3.2:1b"
 TIMEOUT = 120
 
 def get_prompt(summary: dict) -> str:
+    # A small model gives better fixes when it focuses on a few controls
     return (
         "You are a Kubernetes security expert.\n"
-        "Below are kubescape scan results for a cluster. "
-        "Note that failed_controls is sorted by most severe first.\n"
-        f"{summary}\n\n"
-        "Give a brief assessment of the cluster's security, "
-        "then suggest actionable changes to prevent the failed controls. "
-        "Show each change as a Kubernetes YAML snippet in a ```yaml code block."
+        f"Evaluate this kubsescape summary report: {summary}\n"
+        "Give a brief assessment of the cluster's security. "
     )
 
 def llama_chat(prompt: str) -> str:

@@ -1,24 +1,13 @@
-# Ask llama about an example scan summary and see it replies
+# Ask llama about a real scan summary and see it replies
+import json
 import sys
+from pathlib import Path
 
+from kubeshield.features import kubescape_report_summary
 from kubeshield.model import get_prompt, llama_chat
 
-summary = {
-    "compliance_score": 63.547916,
-    "failed_resources_by_severity": {
-        "critical": 0,
-        "high": 54,
-        "medium": 161,
-        "low": 9
-    },
-    "failed_controls": [
-        "Prevent containers from allowing command execution",
-        "Roles with delete capabilities",
-        "Applications credentials in configuration files",
-        "Non-root containers",
-        "List Kubernetes secrets"
-    ]
-}
+report = Path(__file__).parent.parent / "fixtures" / "kubescape-report.json"
+summary = kubescape_report_summary(json.loads(report.read_text()))
 
 reply = llama_chat(get_prompt(summary))
 print(reply)

@@ -20,5 +20,12 @@ def kubescape_report_summary(report: dict) -> dict:
             "medium": severity_counts["mediumSeverity"],
             "low": severity_counts["lowSeverity"],
         },
-        "failed_controls": [c["name"] for c in failed_controls],
+        "failed_controls": [
+            {
+                "name": c["name"],
+                "severity": c["severity"],
+                "failed_resources": c["ResourceCounters"]["failedResources"],
+            }
+            for c in failed_controls
+        ],
     }
