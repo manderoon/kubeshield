@@ -1,39 +1,26 @@
 import json
-import shutil
 import subprocess
 import tempfile
 
 TIMEOUT = 120
 
-def kubescape_scan():
+def kubescape_scan() -> dict:
     """
-    Runs kubescape scan against kube-context
+    Runs kubescape scan against the current kube-context
     Returns parsed JSON report
     """
-
-    if shutil.which("kubescape") is None:
-        raise RuntimeError("Kubescape not found")
-
     with tempfile.NamedTemporaryFile(suffix=".json") as tmp:
-        cmd = [
-            "kubescape",
-            "scan",
-            "--format",
-            "json",
-            "--output",
-            tmp.name,
-        ]
+        cmd = ["kubescape", "scan", "--format", "json", "--output", tmp.name]
 
         try:
-            result = subprocess.run(
-                cmd, capture_output=True, text=True, timeout=TIMEOUT
-            )
-        except subprocess.TimeoutExpired as e:
-            raise RuntimeError(f"kubescape scan timed out: {TIMEOUT} seconds")
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=TIMEOUT, check=False)
+        except FileNotFoundError:
+            raise RuntimeError("kubescape not found") from None
+        except subprocess.TimeoutExpired:
+            raise RuntimeError(f"kubescape scan timed out after {TIMEOUT} seconds") from None
 
         try:
             with open(tmp.name) as f:
                 return json.load(f)
         except json.JSONDecodeError:
-            raise RuntimeError(f"kubescape scan failed: {result.stderr}")
-    
+            raise RuntimeError(f"kubescape scan failed: {result.stderr}") from None
