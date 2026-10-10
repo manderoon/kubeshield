@@ -1,5 +1,9 @@
 .venv/
 __pycache__/
+.pytest_cache/
+.ruff_cache/
+dist/
+.DS_Store
 report.json
 scan.json
 server.log

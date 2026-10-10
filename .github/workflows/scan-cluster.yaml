@@ -1,0 +1,48 @@
+name: Scan cluster
+
+on: push
+
+jobs:
+  scan-cluster:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Run tests
+        run: uv run pytest
+
+      - name: Make kind cluster
+        uses: helm/kind-action@v1
+
+      - name: Install kubescape
+        run: |
+          curl -s https://raw.githubusercontent.com/kubescape/kubescape/master/install.sh | bash
+          echo "$HOME/.kubescape/bin" >> "$GITHUB_PATH"
+
+      - name: Start server
+        run: |
+          uv run uvicorn kubeshield.server:app > server.log 2>&1 &
+          curl --silent --fail --retry 30 --retry-connrefused --retry-delay 1 http://localhost:8000/health
+
+      - name: Deploy vulnerable workload
+        run: |
+          kubectl apply -f manifests/vuln-test-workload.yaml
+          kubectl rollout status deployment/vuln-test-workload --timeout=90s
+
+      - name: Scan cluster and check results
+        run: |
+          curl --silent --show-error --max-time 180 http://localhost:8000/scan > scan.json
+          jq . scan.json
+          jq -e '.top_failed_controls | length > 0' scan.json
+
+      - name: Show server log
+        if: failure()
+        run: cat server.log
