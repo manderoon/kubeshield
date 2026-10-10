@@ -39,7 +39,7 @@ jobs:
 
       - name: Deploy vulnerable workload
         run: |
-          kubectl apply -f manifests/vuln-test-workload.yaml
+          kubectl apply -f tests/ci/vuln-test-workload.yaml
           kubectl rollout status deployment/vuln-test-workload --timeout=90s
 
       - name: Scan cluster and check results
@@ -79,4 +79,4 @@ jobs:
         run: docker exec ${{ job.services.ollama.id }} ollama pull llama3.2:1b
 
       - name: Ask the model about a scan summary
-        run: uv run scripts/test_model.py
+        run: uv run tests/ci/ask_model.py
