@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
+
 from kubeshield.errors import KubeshieldError
 from kubeshield.features import kubescape_report_summary
 from kubeshield.model import get_prompt, llama_chat

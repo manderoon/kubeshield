@@ -4,8 +4,9 @@ from kubeshield.errors import UnavailableError, UpstreamError, UpstreamTimeoutEr
 
 OLLAMA_HOST = "http://localhost:11434"
 OLLAMA_MODEL = "llama3.2:1b"
+TIMEOUT = 120
 
-def get_prompt(summary):
+def get_prompt(summary: dict) -> str:
     return (
         "You are a Kubernetes security expert.\n"
         "Interpret the following kubescape scan results.\n"
@@ -21,10 +22,10 @@ def llama_chat(prompt: str) -> str:
                 "messages": [{"role": "user", "content": prompt}],
                 "stream": False,
             },
-            timeout=120,
+            timeout=TIMEOUT,
         )
     except httpx.TimeoutException:
-        raise UpstreamTimeoutError("ollama request timed out after 120 seconds") from None
+        raise UpstreamTimeoutError(f"ollama request timed out after {TIMEOUT} seconds") from None
     
     except httpx.ConnectError as e:
         raise UnavailableError(f"can't reach ollama at {OLLAMA_HOST}: {e}") from None
