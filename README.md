@@ -1,6 +1,9 @@
 # kubeshield
 
-Scan a Kubernetes cluster with [kubescape](https://github.com/kubescape/kubescape) and get a local LLM inference server to provide a security assessment with suggested fixes.
+Scan a Kubernetes cluster with [kubescape](https://github.com/kubescape/kubescape) and get a local LLM inference server to provide a security assessment, with a JSON patch to fix each affected resource.
+
+> [!NOTE]
+> Please run the program locally with the below instructions to test it!
 
 ## Contents
 
@@ -27,7 +30,7 @@ Scan a Kubernetes cluster with [kubescape](https://github.com/kubescape/kubescap
 
 ```bash
 docker run -d --name ollama -p 11434:11434 ollama/ollama
-docker exec ollama ollama pull llama3.2:1b
+docker exec ollama ollama pull gemma4:e4b-it-qat
 ```
 
 ### Start the server
@@ -40,41 +43,29 @@ uv run kubeshield
 
 - `GET /health` --> returns status
 - `GET /scan` --> returns `kubescape` summary
-- `GET /assess`  --> returns LLM output
+- `GET /assess`  --> returns the summary, the model's assessment, and a JSON patch for each affected resource
 
 ```bash
 curl localhost:8000/assess
 ```
 
-Example output from `/scan`, with `failed_controls` sorted by most severe
+Each fix in the response looks like this:
 
 ```JSON
 {
-    "compliance_score": 64.52465,
-    "failed_resources_by_severity": {
-        "critical": 0,
-        "high": 46,
-        "medium": 153,
-        "low": 8
-    },
-    "failed_controls": [
-        "Ensure CPU limits are set",
-        "Ensure memory limits are set",
-        "Writable hostPath mount",
-        "Applications credentials in configuration files",
-        "Privileged container",
-        ["..."]
-    ]
+    "control": "C-0045",
+    "resource": "Deployment default/vuln-test-workload",
+    "patch": [
+        {"op": "add", "path": "/spec/template/spec/containers/0/volumeMounts/0/readOnly", "value": true}
+    ],
+    "explanation": "Sets the hostPath mount to read-only, so a compromised container can't write to the host. This may break the app if it needs to write to that path."
 }
 ```
 
-`/assess` returns the same summary with the model's reply:
+You can apply a patch with the following command:
 
-```JSON
-{
-    "summary": { "compliance_score": 64.52465, ... },
-    "assessment": "<LLM output>"
-}
+```bash
+kubectl patch deployment vuln-test-workload -n default --type=json -p '<patch>'
 ```
 
 ### Tests
@@ -110,7 +101,7 @@ The literature suggests that although `kubescape` has a larger rule set, `trivy`
 
 ### Fixing misconfigurations with LLMs
 
-`kubeshield` scans a live cluster and uses an LLM to explain the findings and suggest fixes. This approach is supported by recent research:
+`kubeshield` scans a live cluster and uses an LLM to explain the findings and write a fix for each affected resource. This approach is supported by recent research:
 
 - Ye et al. (2025) give LLMs the output of static analysis tools and fix almost 95 per cent of container misconfigurations.
 - Malul et al. (2024) use local models so that configuration files aren't sent to external APIs.
