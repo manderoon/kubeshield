@@ -78,5 +78,18 @@ jobs:
       - name: Download model
         run: docker exec ${{ job.services.ollama.id }} ollama pull gemma4:e4b-it-qat
 
-      - name: Ask the model about a scan summary
+      - name: Make kind cluster
+        uses: helm/kind-action@v1
+
+      - name: Install kubescape
+        run: |
+          curl -s https://raw.githubusercontent.com/kubescape/kubescape/master/install.sh | bash
+          echo "$HOME/.kubescape/bin" >> "$GITHUB_PATH"
+
+      - name: Deploy vulnerable workload
+        run: |
+          kubectl apply -f tests/ci/vuln-test-workload.yaml
+          kubectl rollout status deployment/vuln-test-workload --timeout=90s
+
+      - name: Ask the model to fix the cluster
         run: uv run tests/ci/ask_model.py

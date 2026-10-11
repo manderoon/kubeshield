@@ -23,6 +23,7 @@ def get_prompt(summary: dict) -> str:
         + "\n".join(f"- {f['resource']}: {'; '.join(f['changes'])}" for f in c["fixes"])
         for c in top_controls
     )
+    # Written by Claude
     return (
         "You are a Kubernetes security expert.\n"
         "A kubescape scan of a cluster gave a compliance score of "
