@@ -154,3 +154,13 @@ Rahman, A., Shamim, S. I., Bose, D. B., & Pandita, R. (2023).
 Ye, Z., Le, T. H. M., & Babar, M. A. (2025).
 [LLMSecConfig: An LLM-based approach for fixing software container misconfigurations](https://arxiv.org/abs/2502.02009).
 *arXiv preprint* arXiv:2502.02009.
+
+## AI Disclaimer
+
+AI was used in this project in the following ways:
+
+- Evaluated kubeshield model outputs
+- Created vulnerable workload
+- Created JSON schema
+- Generated an improved prompt for the model
+- Acted as a "rubber duck"

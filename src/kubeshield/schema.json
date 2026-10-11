@@ -1,0 +1,58 @@
+{
+  "type": "object",
+  "properties": {
+    "assessment": {
+      "type": "string"
+    },
+    "fixes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "control": {
+            "type": "string"
+          },
+          "resource": {
+            "type": "string"
+          },
+          "patch": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "op": {
+                  "enum": [
+                    "add",
+                    "replace",
+                    "remove"
+                  ]
+                },
+                "path": {
+                  "type": "string"
+                },
+                "value": {}
+              },
+              "required": [
+                "op",
+                "path"
+              ]
+            }
+          },
+          "explanation": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "control",
+          "resource",
+          "patch",
+          "explanation"
+        ]
+      }
+    }
+  },
+  "required": [
+    "assessment",
+    "fixes"
+  ]
+}
