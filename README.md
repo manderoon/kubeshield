@@ -3,9 +3,7 @@
 Scan a Kubernetes cluster with [kubescape](https://github.com/kubescape/kubescape) and get a local LLM inference server to provide a security assessment, with a JSON patch to fix each affected resource.
 
 > [!NOTE]
-> Please run the program locally with the instructions below to test it!
-> The CI model test uses a saved scan of an empty cluster so theres nothing to fix
-> Future development requires that we combine it with`scan-cluster`, which runs model test against a live cluster with the vulnerable workload applied
+> Please run the program locally with the instructions below to test it with a live kubernetes cluster!
 
 ## Contents
 
