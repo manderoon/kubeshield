@@ -54,7 +54,7 @@ jobs:
 
   test-model:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 45
     services:
       ollama:
         image: ollama/ollama
@@ -76,7 +76,7 @@ jobs:
 
       # Use same OLLAMA_MODEL in src/kubeshield/model.py
       - name: Download model
-        run: docker exec ${{ job.services.ollama.id }} ollama pull llama3.2:1b
+        run: docker exec ${{ job.services.ollama.id }} ollama pull gemma4:e4b-it-qat
 
       - name: Ask the model about a scan summary
         run: uv run tests/ci/ask_model.py

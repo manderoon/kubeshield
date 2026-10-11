@@ -5,8 +5,8 @@ import httpx
 from kubeshield.errors import UnavailableError, UpstreamError, UpstreamTimeoutError
 
 OLLAMA_HOST = "http://localhost:11434"
-OLLAMA_MODEL = "llama3.2:1b"
-TIMEOUT = 120
+OLLAMA_MODEL = "gemma4:e4b-it-qat"
+TIMEOUT = 600
 TOP_CONTROLS = 3
 
 def get_prompt(summary: dict) -> str:
