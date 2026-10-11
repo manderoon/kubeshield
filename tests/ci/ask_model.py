@@ -3,7 +3,7 @@ import json
 import sys
 from pathlib import Path
 
-from kubeshield.features import kubescape_report_summary
+from kubeshield.kubescape import kubescape_report_summary
 from kubeshield.model import get_prompt, llama_chat
 
 report = Path(__file__).parent.parent / "fixtures" / "kubescape-report.json"
